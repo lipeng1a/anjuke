@@ -30,7 +30,8 @@ sql = '''create table ajk0505(
                                 community  varchar(100) default null,
                                 Apartment  varchar(255) default null, 
                                 unitprice varchar(100) default null,
-                                area varchar(30) default null, 
+                                area varchar(30) default null,
+                                price varchar(100) default null, 
                                 paymentsfirst varchar(20) default null,
                                 madeyear  varchar(10) default null,
                                 tpyehous varchar(20) default null,
@@ -119,7 +120,8 @@ def get_page_detail(url):
         houseencode = houseencode.split('： ')[1]
         houseencode = houseencode.split('                        ，')[0]
 
-        community = soup.find_all('a', {'_soj': 'propview'})[0].get_text()                 #所属小区-------------------
+        community = soup.find_all('a', {'_soj': 'propview'})[0].get_text()#所属小区-------------------
+        price = soup.find_all('span', {'class': 'light info-tag'})[0].get_text()
         Apartment = soup.find_all('div', {'class': 'houseInfo-content'})[1].get_text()
         Apartment = Apartment.replace("\t", "")
         Apartment = Apartment.replace("\n", "")  #户型---------------------
@@ -144,8 +146,8 @@ def get_page_detail(url):
         print(region, housid, title, houseencode,note)
         #print(region, Hyperlink, housid, title, houseencode, community, Apartment, unitprice, area, paymentsfirst,madeyear,tpyehous,floor,Renovation,uesyear,usedyear)
         # -------------------------------------------------------------做插入数据库的操作-----------------------------------------------------------------
-        insert_sql = "insert into ajk0505(housepage,housenum,region, Hyperlink, housid, title, houseencode, community, Apartment, unitprice, area, paymentsfirst,madeyear,tpyehous,floor,Renovation,uesyear,usedyear,note) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-        insert_data = [housepage,housenum,region, Hyperlink, housid, title, houseencode, community, Apartment, unitprice, area, paymentsfirst,madeyear,tpyehous,floor,Renovation,uesyear,usedyear,note]  # 转换后字符串的插入数据
+        insert_sql = "insert into ajk0505(housepage,housenum,region, Hyperlink, housid, title, houseencode, community, Apartment, unitprice, area, price, paymentsfirst,madeyear,tpyehous,floor,Renovation,uesyear,usedyear,note) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+        insert_data = [housepage,housenum,region, Hyperlink, housid, title, houseencode, community, Apartment, unitprice, area, price, paymentsfirst,madeyear,tpyehous,floor,Renovation,uesyear,usedyear,note]  # 转换后字符串的插入数据
         cursor.execute(insert_sql, insert_data)
         # print('******完成此条插入!')
         db.commit()

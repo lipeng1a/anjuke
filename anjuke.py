@@ -50,17 +50,14 @@ housenum = 0
 
 def get_page(url):  #在调用函数时，传入一个区的主页连接
     global housepage
-    while 1:
-        try:
-            response = requests.get(url, headers=header)
-            break
-        except:
-            print("Connection refused by the server..")
-            print("Let me sleep for 5 seconds")
-            print("ZZzzzz...")
-            time.sleep(5)
-            print("Was a nice sleep, now let me continue...")
-            continue
+    try:
+        response = requests.get(url, headers=header)
+    except:
+        print("Connection refused by the server..")
+        print("Let me sleep for 20 seconds")
+        print("ZZzzzz...")
+        time.sleep(20)
+        response = requests.get(url, headers=header)
     #通过BeautifulSoup进行解析出每个房源详细列表并进行打印
     soup_idex = BeautifulSoup(response.text, 'html.parser')
     result_li = soup_idex.find_all('li', {'class': 'list-item'})
@@ -88,29 +85,32 @@ def my_Beautifulsoup(response):
 # 详细页面的爬取
 def get_page_detail(url):
     global housenum
-    while 1:
-        try:
-            response = requests.get(url, headers=header)
-            break
-        except:
-            print("Connection refused by the server..")
-            print("Let me sleep for 5 seconds")
-            print("ZZzzzz...")
-            time.sleep(5)
-            print("Was a nice sleep, now let me continue...")
-            continue
-    time.sleep(random.randint(1,3))
+    try:
+        response = requests.get(url, headers=header)
+    except:
+        print("Connection refused by the server..")
+        print("Let me sleep for 20 seconds")
+        print("ZZzzzz...")
+        time.sleep(20)
+        response = requests.get(url, headers=header)
+    # time.sleep(random.randint(1,2))
     if response.status_code == 200: #请求成功
-        housenum += 1
         soup = BeautifulSoup(response.text, 'html.parser')
+        title0 = soup.find_all('h3', {'class': 'long-title'})
+        if not title0: #title0为空，需要手势验证，打开浏览器验证就行
+            verify=input("先打开浏览器进行手势验证，然后随便输入都可以使程序继续进行：")
+            response = requests.get(url, headers=header)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            title0 = soup.find_all('h3', {'class': 'long-title'})
+        housenum += 1
         # 地区、链接、id、标题等基本信息
         region_div = soup.find_all('div', {'class': 'p_1180 p_crumbs'})
         soup_1 = my_Beautifulsoup(region_div)
         #region = soup_1.find_all('a')[2].get_text()                           #获取地区--------------
         Hyperlink = url                                                        #房源链接-------------
-        print(Hyperlink)
-        housid = url[38:]                                                    #房源id---------------
-        title = soup.find_all('h3', {'class': 'long-title'})[0].get_text()
+        # print(Hyperlink)
+        housid = url[38:]#房源id---------------
+        title = title0[0].get_text()
         title =  title.replace('\n','')#房源title------------
         #房源基本信息
         #housecode = soup.find_all('span', {'id': 'houseCode'})[0].get_text()
@@ -152,6 +152,6 @@ def get_page_detail(url):
 
 if __name__ == '__main__':
     # url链接
-    url = 'https://xianning.anjuke.com/sale/xiananqu/'  #集美、海沧、翔安 、湖里、同安、      已抓
+    url = 'https://wuhan.anjuke.com/sale/hongshana/'  #集美、海沧、翔安 、湖里、同安、      已抓
    # 页面爬取函数调用
     get_page(url)
